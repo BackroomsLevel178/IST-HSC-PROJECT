@@ -34,6 +34,25 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
+        }
+        .toolbar {
+            display: flex;
+            justify-content: flex-end;
+            width: 300px;
+            margin-bottom: 10px;
+        }
+        .toolbar button {
+            background-color: #007BFF;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+            outline: none;
+            margin-left: 5px;
+        }
+        .toolbar button.active {
+            background-color: #0056b3;
         }
         .editable-box {
             width: 300px;
@@ -54,9 +73,35 @@
         <a href="page4.html">Page 4</a>
     </div>
     <div class="content">
+        <div class="toolbar">
+            <button class="bold-button">B</button>
+            <button class="italic-button"><i>I</i></button>
+        </div>
         <div class="editable-box" contenteditable="true">
             This is an editable text box. Click here to edit the text!
         </div>
     </div>
+    <script>
+        const boldButton = document.querySelector('.bold-button');
+        const italicButton = document.querySelector('.italic-button');
+        const editableBox = document.querySelector('.editable-box');
+
+        boldButton.addEventListener('click', () => {
+            document.execCommand('bold');
+            boldButton.classList.toggle('active');
+        });
+
+        italicButton.addEventListener('click', () => {
+            document.execCommand('italic');
+            italicButton.classList.toggle('active');
+        });
+
+        editableBox.addEventListener('input', () => {
+            const isBold = document.queryCommandState('bold');
+            const isItalic = document.queryCommandState('italic');
+            boldButton.classList.toggle('active', isBold);
+            italicButton.classList.toggle('active', isItalic);
+        });
+    </script>
 </body>
 </html>

@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Family Tree Editor</title>
+    <title>Family Tree</title>
     <style>
+        
         body {
             display: flex;
             font-family: Arial, sans-serif;
@@ -34,53 +35,15 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
         }
-        .tree-container {
-            position: relative;
-            width: 80%;
-            height: 80%;
-            background-color: #fff;
-            border: 1px solid #ddd;
-            overflow: auto;
-        }
-        .node {
-            position: absolute;
-            width: 180px;
+        .editable-box {
+            width: 300px;
+            height: 200px;
+            border: 2px solid #333;
             padding: 10px;
-            text-align: left;
-            border: 1px solid #333;
-            border-radius: 5px;
-            background-color: #fff;
-            box-shadow: 0 0 5px rgba(0,0,0,0.1);
-            cursor: pointer;
-        }
-        .line {
-            position: absolute;
-            width: 2px;
-            background-color: #333;
-        }
-        .context-menu {
-            position: absolute;
-            display: none;
             background-color: #fff;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            z-index: 1000;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
-        .context-menu button {
-            display: block;
-            width: 100%;
-            background: none;
-            border: none;
-            padding: 10px;
-            text-align: left;
-            cursor: pointer;
-        }
-        .context-menu button:hover {
-            background-color: #f0f0f0;
+            overflow-y: auto;
         }
     </style>
 </head>
@@ -91,156 +54,5 @@
         <a href="page3.html">Page 3</a>
         <a href="page4.html">Page 4</a>
     </div>
-    <div class="content">
-        <div class="tree-container"></div>
-    </div>
-
-    <div class="context-menu" id="context-menu">
-        <button onclick="addChild()">Add Child</button>
-        <button onclick="addParent()">Add Parent</button>
-        <button onclick="addSibling()">Add Sibling</button>
-        <button onclick="deleteBox()">Delete Box</button>
-    </div>
-
-    <script>
-        let nodeIdCounter = 1;
-        let selectedNode = null;
-
-        function init() {
-            addNode('initial');
-        }
-
-        function addChild() {
-            addNode('child');
-            hideContextMenu();
-        }
-
-        function addParent() {
-            addNode('parent');
-            hideContextMenu();
-        }
-
-        function addSibling() {
-            addNode('sibling');
-            hideContextMenu();
-        }
-
-        function deleteBox() {
-            if (selectedNode) {
-                selectedNode.remove();
-                hideContextMenu();
-            }
-        }
-
-        function addNode(type) {
-            const treeContainer = document.querySelector('.tree-container');
-            const newNode = document.createElement('div');
-            newNode.className = 'node';
-            newNode.id = `node${nodeIdCounter}`;
-            newNode.draggable = true;
-            newNode.ondragstart = dragStart;
-            newNode.ondragover = dragOver;
-            newNode.ondrop = drop;
-            newNode.onclick = () => selectNode(newNode);
-            newNode.oncontextmenu = (event) => showContextMenu(event, newNode);
-
-            newNode.innerHTML = `
-                <div><span>Name: </span><span contentEditable="true">Name ${nodeIdCounter}</span></div>
-                <div><span>DOB: </span><span contentEditable="true">YYYY-MM-DD</span></div>
-                <div>
-                    <label><input type="radio" name="gender${nodeIdCounter}" value="M"> M</label>
-                    <label><input type="radio" name="gender${nodeIdCounter}" value="F"> F</label>
-                </div>
-            `;
-
-            if (type === 'child' && selectedNode) {
-                newNode.style.top = `${parseInt(selectedNode.style.top) + 100}px`;
-                newNode.style.left = selectedNode.style.left;
-                drawLine(selectedNode, newNode);
-            } else if (type === 'parent' && selectedNode) {
-                newNode.style.top = `${parseInt(selectedNode.style.top) - 100}px`;
-                newNode.style.left = selectedNode.style.left;
-                drawLine(newNode, selectedNode);
-            } else if (type === 'sibling' && selectedNode) {
-                newNode.style.top = selectedNode.style.top;
-                newNode.style.left = `${parseInt(selectedNode.style.left) + 120}px`;
-            } else if (type === 'initial') {
-                newNode.style.top = '50px';
-                newNode.style.left = '50px';
-                selectNode(newNode);
-            } else {
-                newNode.style.top = '50px';
-                newNode.style.left = `${nodeIdCounter * 120}px`;
-            }
-
-            treeContainer.appendChild(newNode);
-            nodeIdCounter++;
-        }
-
-        function selectNode(node) {
-            document.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
-            node.classList.add('selected');
-            selectedNode = node;
-        }
-
-        function drawLine(startNode, endNode) {
-            const treeContainer = document.querySelector('.tree-container');
-            const line = document.createElement('div');
-            line.className = 'line';
-
-            const startX = parseInt(startNode.style.left) + 90;
-            const startY = parseInt(startNode.style.top) + 30;
-            const endX = parseInt(endNode.style.left) + 90;
-            const endY = parseInt(endNode.style.top) + 30;
-
-            const length = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2);
-            const angle = Math.atan2(endY - startY, endX - startX) * (180 / Math.PI);
-
-            line.style.width = `${length}px`;
-            line.style.transform = `rotate(${angle}deg)`;
-            line.style.left = `${startX}px`;
-            line.style.top = `${startY}px`;
-
-            treeContainer.appendChild(line);
-        }
-
-        function dragStart(event) {
-            event.dataTransfer.setData('text/plain', event.target.id);
-            event.target.style.opacity = '0.5';
-        }
-
-        function dragOver(event) {
-            event.preventDefault();
-        }
-
-        function drop(event) {
-            event.preventDefault();
-            const id = event.dataTransfer.getData('text');
-            const node = document.getElementById(id);
-            node.style.left = `${event.clientX - 90}px`;
-            node.style.top = `${event.clientY - 30}px`;
-            node.style.opacity = '1';
-        }
-
-        function showContextMenu(event, node) {
-            event.preventDefault();
-            selectedNode = node;
-
-            const contextMenu = document.getElementById('context-menu');
-            contextMenu.style.display = 'block';
-            contextMenu.style.left = `${event.pageX}px`;
-            contextMenu.style.top = `${event.pageY}px`;
-        }
-
-        function hideContextMenu() {
-            const contextMenu = document.getElementById('context-menu');
-            contextMenu.style.display = 'none';
-        }
-
-        window.addEventListener('click', hideContextMenu);
-        window.addEventListener('contextmenu', (event) => event.preventDefault());
-
-        window.onload = init;
-    </script>
 </body>
 </html>

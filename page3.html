@@ -4,47 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page 3</title>
-    <style>
-        body {
-            display: flex;
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-        }
-        .sidebar {
-            width: 200px;
-            background-color: #f4f4f4;
-            padding: 15px;
-            height: 100vh;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-            overflow-y: auto;
-        }
-        .sidebar a {
-            display: block;
-            padding: 10px;
-            color: #333;
-            text-decoration: none;
-        }
-        .sidebar a:hover {
-            background-color: #ddd;
-        }
-        .content {
-            flex-grow: 1;
-            padding: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .editable-box {
-            width: 300px;
-            height: 200px;
-            border: 2px solid #333;
-            padding: 10px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            overflow-y: auto;
-        }
-    </style>
+    <link rel="stylesheet" href="page3.css">
 </head>
 <body>
     <div class="sidebar">
@@ -54,9 +14,31 @@
         <a href="page4.html">Page 4</a>
     </div>
     <div class="content">
-        <div class="editable-box" contenteditable="true">
-            This is an editable text box. Click here to edit the text!
-        </div>
+        <div class="rectangle" id="rectangle"></div>
     </div>
+
+    <script>
+        let scale = 1;  // Initial zoom scale
+    
+        const contentDiv = document.querySelector('.content');
+    
+        // Zoom in and out using mouse wheel
+        contentDiv.addEventListener('wheel', function(event) {
+            // Prevent default scrolling behavior
+            event.preventDefault();
+    
+            // Determine the zoom direction (in or out)
+            if (event.deltaY < 0) {
+                scale *= 1.1;  // Zoom in
+            } else {
+                scale /= 1.1;  // Zoom out
+            }
+    
+            // Apply the scale transformation to the content div
+            contentDiv.style.transform = `scale(${scale})`;
+        });
+    </script>
+    
+    
 </body>
 </html>
